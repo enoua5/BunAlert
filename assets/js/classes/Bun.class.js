@@ -2,16 +2,22 @@ class Bun extends Mob
 {
   constructor(x,y,angle)
   {
-    size=Random.randNormBetween(1, 20, 10, 4);
+    var size=Random.randNormBetween(1, 20, 10, 4);
     
     var speed=(size/10)**-1
-    var turn=speed/4
+    var turn=speed/8;
     
     super(x,y,angle,0,[], speed,turn);
     this.size=size;
     
-    //TODO set to true when reported, false when not seen
-    this.seen=false;
+    this.size=size;
+    
+    //vars for being reported
+    this.timeToReport=100;
+    this.reportTimer=0;
+    this.reported=false;
+    this.reportCooldownMax=1000;
+    this.reportCooldown=0;
     
     this.Mood={
       SIT: "SIT",
@@ -22,22 +28,24 @@ class Bun extends Mob
       WANDER: "WANDER",
       HOP: "HOP" //sub-mood
     };
-    this.currentMood=this.Mood.SIT;
+    this.currentMood=this.Mood.WANDER;
     this.prevMood=this.Mood.SIT;
     //once this hits 0, it switches moods
     //max value is 100
     this._moodDepth=10;
   }
-  getIntimidation(world)
+  getIntimidation()
   {
     let p1=this.pos;
     const distStretch=10;
     
     let totalIntim=0;
-    for(let i=0; i<world.entities.length; i++)
+    for(let i=0; i<world.entities.all.length; i++)
     {
-      let e=world.entities[i];
+      let e=world.entities.all[i];
       let p2=e.pos;
+      if(p1.x==p2.x && p1.y==p2.y)
+        continue;
       let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)/distStretch;
       
       let baseIntim=e.intim;
@@ -58,7 +66,7 @@ class Bun extends Mob
   checkIntimAndRun()
   {
     let intimidation=this.getIntimidation();
-    if(intimidation>50)
+    if(intimidation>0)
     {
       this.prevMood=this.currentMood;
       this.currentMood=this.Mood.RUN;
@@ -66,106 +74,222 @@ class Bun extends Mob
       return;
     }
   }
+  enterHop()
+  {
+    this.animTimer=100;
+    this.prevMood=this.currentMood;
+    this.currentMood=this.Mood.HOP;
+    //DO NOT UPDATE MOOD DEPTH, WE ARE JUST RETURNING
+  }
+  beSeen(reportSpeed)
+  {
+    if(!this.reported)
+    {
+      this.reportTimer+=reportSpeed;
+      if(this.reportTimer>=this.timeToReport)
+      {
+        this.reported=true;
+        this.reportCooldown=this.reportCooldownMax;
+        return true;
+      }
+    }
+    else
+    {
+        this.reportCooldown=this.reportCooldownMax;
+    }
+    return false;
+  }
   
   tick()
   {
-    let moodTicks={
-      SIT:function()
+    if(this.reported)
+    {
+      this.reportCooldown--;
+      if(this.reportCooldown<=0)
       {
-        this.checkIntimAndRun();
+        this.reported=false;
+        this.reportTimer=0;
+      }
+    }
+    let moodTicks={
+      SIT:function(self)
+      {
+        self.checkIntimAndRun();
         
         if(Math.random()<0.025)
-          this._moodDepth--;
+          self._moodDepth--;
         
-        if(this._moodDepth<=0)
+        if(self._moodDepth<=0)
         {
-          this.prevMood=this.currentMood;
-          this.currentMood=this.Mood.Wander;
-          this._moodDepth=50;
+          self.prevMood=self.currentMood;
+          self.currentMood=self.Mood.WANDER;
+          self.turnDir(Random.randInt(-2,2));
+          self._moodDepth=50;
         }
       },
-      RUN:function()
+      RUN:function(self)
       {
-        let intimidation=this.getIntimidation();
+        let intimidation=self.getIntimidation();
         if(intimidation<=0)
         {
-          this.prevMood=this.currentMood;
-          this.currentMood=this.Mood.SIT;
-          this._moodDepth=50;
+          self.prevMood=self.currentMood;
+          self.currentMood=self.Mood.SIT;
+          self._moodDepth=20;
           return;
         }
-        //TODO find direction that has the least scary
-        //this.turnDir(the less scary way)
-        this.animTimer=100;
-        this.prevMood=this.currentMood;
-        this.currentMood=this.Mood.HOP;
-        //DO NOT UPDATE MOOD DEPTH, WE WANT TO RETURN HERE
-      },
-      GROUP_UP:function()
-      {
-        this.checkIntimAndRun();
-        //TODO find the nearest bun and approach
-      },
-      APPROACH:function()
-      {
-        this.checkIntimAndRun();
-        //TODO find the nearest human and approach 
-      },
-      WANDER:function()
-      {
-        this.checkIntimAndRun();
         
-        this.turnDir(Random.randSelect([-1,1]));
+        let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
+        let p1=self.pos;
+        for(let i=0; i<world.entities.watchers.length; i++)
+        {
+          let e=world.entities.watchers[i];
+          let p2=e.pos;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
+        
+        let dx=nearest.pos.x - self.pos.x;
+        let dy=nearest.pos.y - self.pos.y;
+        let absoluteAngle=Math.atan2(dy,dx);
+        
+        let a=self.angle;
+        let b=absoluteAngle;
+        let angleTo=Math.atan2(Math.sin(a-b), Math.cos(a-b));
+        
+        self.turnDir(Math.sign(angleTo));
+        
+        self.enterHop();
+      },
+      GROUP_UP:function(self)
+      {
+        self.checkIntimAndRun();
+        
+        let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
+        let p1=self.pos
+        for(let i=0; i<world.entities.buns.length; i++)
+        {
+          let e=world.entities.buns[i];
+          let p2=e.pos;
+          if(p1.x==p2.x && p1.y==p2.y)
+            continue;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
+        
+        let dx=nearest.pos.x - self.pos.x;
+        let dy=nearest.pos.y - self.pos.y;
+        let absoluteAngle=Math.atan2(dy,dx);
+        
+        let a=self.angle;
+        let b=absoluteAngle;
+        let angleTo=-Math.atan2(Math.sin(a-b), Math.cos(a-b));
+        
+        self.turnDir(Math.sign(angleTo));
+        
+        self.enterHop();
+        
+        self._moodDepth--;
+        
+        if(self._moodDepth<=0 || nearest.dist<20)
+        {
+          self.prevMood=self.currentMood;
+          self.currentMood=self.Mood.SIT;
+          self._moodDepth=20;
+        }
+      },
+      APPROACH:function(self)
+      {
+        //self.checkIntimAndRun();
+        
+        let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
+        let p1=self.pos
+        for(let i=0; i<world.entities.watchers.length; i++)
+        {
+          let e=world.entities.watchers[i];
+          let p2=e.pos;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
+        
+        let dx=nearest.pos.x - self.pos.x;
+        let dy=nearest.pos.y - self.pos.y;
+        let absoluteAngle=Math.atan2(dy,dx);
+        
+        let a=self.angle;
+        let b=absoluteAngle;
+        let angleTo=-Math.atan2(Math.sin(a-b), Math.cos(a-b));
+        
+        self.turnDir(Math.sign(angleTo));
+        
+        self.enterHop();
+        
+        self._moodDepth--;
+        
+        if(self._moodDepth<=0 || nearest.dist<20)
+        {
+          self.prevMood=self.currentMood;
+          self.currentMood=self.Mood.SIT;
+          self._moodDepth=20;
+        }
+      },
+      WANDER:function(self)
+      {
+        self.checkIntimAndRun();
+        
+        //self.turnDir(Random.randSelect([-1,1]));
         
         if(Math.random()<0.2)
         {
-          this.animTimer=100;
-          this.prevMood=this.currentMood;
-          this.currentMood=this.Mood.HOP;
-          //DO NOT UPDATE MOOD DEPTH, WE WANT TO RETURN HERE
+          self.enterHop();
         }
         
-        this._moodDepth--;
-        if(this._moodDepth<=0)
+        self._moodDepth--;
+        if(self._moodDepth<=0)
         {
           if(Math.random()<0.5)
           {
-            this.prevMood=this.currentMood;
-            this.currentMood=this.Mood.SIT;
-            this._moodDepth=50;
+            self.prevMood=self.currentMood;
+            self.currentMood=self.Mood.SIT;
+            self._moodDepth=20;
             return;
           }
           else if(Math.random()<0.8)
           {
-            this.prevMood=this.currentMood;
-            this.currentMood=this.Mood.GROUP_UP;
-            this._moodDepth=50;
+            self.prevMood=self.currentMood;
+            self.currentMood=self.Mood.GROUP_UP;
+            self._moodDepth=50;
             return;
           }
           else
           {
-            this.prevMood=this.currentMood;
-            this.currentMood=this.Mood.APPROACH;
-            this._moodDepth=50;
+            self.prevMood=self.currentMood;
+            self.currentMood=self.Mood.APPROACH;
+            self._moodDepth=50;
             return;
             
           }
         }
       },
-      HOP:function()
+      HOP:function(self)
       {
-        this.moveForward();
-        this.animTimer--;
-        if(this.animTimer<=0)
+        self.moveForward();
+        self.animTimer-=20;
+        if(self.animTimer<=0)
         {
-          this.animTimer=100;
-          this.animFrame++;
-          if(this.animFrame>=this.imgs)
+          self.animTimer=100;
+          self.animFrame++;
+          if(self.animFrame>=self.imgs.length)
           {
-            this.animFrame=0;
-            this.animTimer=Infinity;
-            this.currentMood=this.prevMood;
-            this.prevModd=this.Mood.HOP;
+            self.animFrame=0;
+            self.animTimer=Infinity;
+            self.currentMood=self.prevMood;
+            self.prevMood=self.Mood.HOP;
             //DO NOT UPDATE MOOD DEPTH, WE ARE JUST RETURNING
           }
         }
@@ -174,22 +298,22 @@ class Bun extends Mob
     switch(this.currentMood)
     {
       case this.Mood.SIT:
-        moodTicks.SIT();
+        moodTicks.SIT(this);
         break;
       case this.Mood.RUN:
-        moodTicks.RUN();
+        moodTicks.RUN(this);
         break;
       case this.Mood.GROUP_UP:
-        moodTicks.GROUP_UP();
+        moodTicks.GROUP_UP(this);
         break;
       case this.Mood.APPROACH:
-        moodTicks.APPROACH();
+        moodTicks.APPROACH(this);
         break;
       case this.Mood.WANDER:
-        moodTicks.WANDER();
+        moodTicks.WANDER(this);
         break;
       case this.Mood.HOP:
-        moodTicks.HOP();
+        moodTicks.HOP(this);
         break;
       default:
         console.warn("Bun in unrecongnized state \""+this.currentMood+"\"");

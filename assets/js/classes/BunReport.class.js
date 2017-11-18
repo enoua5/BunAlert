@@ -1,10 +1,10 @@
 class BunReport
 {
-  constructor(finderName, loc, time)
+  constructor(finderName, loc)
   {
     //time is in UTC
     this.finderName=finderName;
     this.loc=loc;
-    this.time=time;
+    this.timeToClear=10000;//10 seconds
   }
 }

@@ -8,25 +8,33 @@
 		<!--import classes-->
 		<script src="assets/js/classes/Random.class.js"></script>
 		
+		<script src="assets/js/buntracker.js"></script>
+		
 		<script src="assets/js/classes/Entity.class.js"></script>
 		<script src="assets/js/classes/Mob.class.js"></script>
 		  <script src="assets/js/classes/Bun.class.js"></script>
+		  <script src="assets/js/classes/Watcher.class.js"></script>
+		  <script src="assets/js/classes/Player.class.js"></script>
 		 <script src="assets/js/classes/Hideable.class.js"></script>
 		  <script src="assets/js/classes/Grass.class.js"></script>
 		  <script src="assets/js/classes/Bush.class.js"></script>
 		  <script src="assets/js/classes/Rock.class.js"></script>
+		<script src="assets/js/classes/BunReport.class.js"></script>
+		
 		 
 		<script src="assets/js/classes/World.class.js"></script>
 		
+		<script src="assets/js/main.js"></script>
 		<!--end js imports-->
 		<script>
 		function onLoad()
 		{
-
+      window.world=new World(5000,5000);
+      window.gameLoop=setInterval(main, 20);
 		}
 		</script>
 	</head>
 	<body onload="onLoad()">
-
+    <canvas id="canvas" width="5000" height="5000">
 	</body>
 </html>

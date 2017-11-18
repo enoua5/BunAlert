@@ -1,1 +1,4 @@
-//TODO create player
+class Player extends Watcher
+{
+
+}

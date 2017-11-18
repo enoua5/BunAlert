@@ -33,7 +33,7 @@ class Random
 	  var v=1-Math.random();
 	  //box cox
 	  var g=((-2*Math.log(u))**0.5)*Math.cos(2*Math.PI*v);
-	  return sigma*g + mu;
+	  return sig*g + mu;
   }
   static randNormBetween(min, max, mu, sig, randClass)
   {
