@@ -22,8 +22,10 @@ class Mob extends Entity
     let newX=this.pos.x+dx;
     let newY=this.pos.y+dy;
     
-    this.pos.x=Math.min(Math.max(0,newX),world.w);
-    this.pos.y=Math.min(Math.max(0,newY),world.h);
+    //this.pos.x=Math.min(Math.max(0,newX),world.w);
+    this.pos.x=(((newX % world.w) + world.w) % world.w);
+    //Math.min(Math.max(0,newY),world.h);
+    this.pos.y=(((newY % world.h) + world.h) % world.h);
   }
   turnDir(dir)
   {

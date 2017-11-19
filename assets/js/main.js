@@ -14,8 +14,8 @@ function drawScene()
   //PLEASE OH PLEASE OH PLEASE DON'T LET THIS BE FINAL
   ctx.save();
   ctx.scale(0.5,0.5);
-  ctx.translate(-world.entities.player.pos.x+800-(150/2),
-     -world.entities.player.pos.y+400-(300/2));
+  ctx.translate(-world.entities.player.pos.x+800,
+     -world.entities.player.pos.y+400-(300/2)+200);
   for(let i=0; i<world.entities.all.length; i++)
   {
     let e=world.entities.all[i];
@@ -43,10 +43,10 @@ function drawScene()
       {
         ctx.fillStyle="#800000";
       }
-      ctx.fillRect(e.pos.x, e.pos.y, 75, 150);
+      ctx.fillRect(e.pos.x-(75/2), e.pos.y-150, 75, 150);
       if(e.currentMood=="SQUEEL")
       {
-        ctx.drawImage(images.heart, e.pos.x+30, e.pos.y-20);
+        ctx.drawImage(images.heart, e.pos.x+21-(75/2), e.pos.y-35-150, 32, 32);
       }
       continue;
     }

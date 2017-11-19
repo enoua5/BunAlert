@@ -23,8 +23,11 @@ var bunTracker={
     let locArea=document.createElement("p");
     
     pushNoti.className="report";
-    nameArea.innerText=report.finderName;
-    locArea.innerText="Bun at "+parseInt(report.loc.x)+", "
+    nameArea.innerHTML="<span>"+report.finder.username+
+      " </span><span style='color:#00ff00'>("+
+      parseInt(report.finder.popularity)+")</span>";
+    locArea.innerText=(report.isKing?"King ":"")+
+      "Bun at "+parseInt(report.loc.x)+", "
       +parseInt(report.loc.y)+"!";
     pushNoti.appendChild(nameArea);
     pushNoti.appendChild(locArea);

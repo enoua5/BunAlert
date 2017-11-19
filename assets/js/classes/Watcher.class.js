@@ -11,6 +11,9 @@ class Watcher extends Mob
     this.viewDist=500;
     this.reportSpeed=1;
     
+    this.happiness=0;
+    this.popularity=0;
+    
     this.target=null;
     
     this.username=Random.randSelect(
@@ -164,10 +167,12 @@ class Watcher extends Mob
           return;
         }
         bun=bun.bun;
+        self.happiness+=1/(bun.size*10)
         if(bun.beSeen(self.reportSpeed))
         {
           //CONGRATS! YOU REPORTED THE BUN!
-          let report=new BunReport(self.username, bun.pos);
+          self.popularity+=1/(bun.size/10);
+          let report=new BunReport(self, bun.pos, bun.isKingBun());
           bunTracker.pushReport(report);
         }
       },
@@ -213,6 +218,8 @@ class Watcher extends Mob
     {
       document.getElementById("coord").innerText=parseInt(this.pos.x)+", "
         +parseInt(this.pos.y);
+      document.getElementById("hap").innerText=parseInt(this.happiness);
+      document.getElementById("pop").innerText=parseInt(this.popularity);
       if(key[38]||key[87])//up
       {
         this.angle=3*(Math.PI/2);
