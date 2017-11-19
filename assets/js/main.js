@@ -16,26 +16,38 @@ function drawScene()
   ctx.scale(0.5,0.5);
   ctx.translate(-world.entities.player.pos.x+800,
      -world.entities.player.pos.y+400-(300/2)+200);
+  ctx.strokeStyle="#000000";
+  ctx.lineWidth=10;
+  ctx.strokeRect(0,0,world.w,world.h);
+  /*
   for(let i=0; i<world.entities.all.length; i++)
   {
     let e=world.entities.all[i];
     if(e instanceof Bun)
     {
-      ctx.fillStyle="#d2b48c";
-      if(e.currentMood=="RUN"||(e.prevMood=="RUN" && e.currentMood=="HOP"))
-        ctx.fillStyle="#ff0000";
-      if(e.currentMood=="WANDER"||(e.prevMood=="WANDER" && e.currentMood=="HOP"))
-        ctx.fillStyle="#00FFFF";
-      if(e.currentMood=="SIT")
-        ctx.fillStyle="#0000ff";
+      //ctx.fillStyle="#d2b48c";
+      //if(e.currentMood=="RUN"||(e.prevMood=="RUN" && e.currentMood=="HOP"))
+      //  ctx.fillStyle="#ff0000";
+      //if(e.currentMood=="WANDER"||(e.prevMood=="WANDER" && e.currentMood=="HOP"))
+      //  ctx.fillStyle="#00FFFF";
+      //if(e.currentMood=="SIT")
+      //  ctx.fillStyle="#0000ff";
       //ctx.fillRect(e.pos.x, e.pos.y, 5*e.size, 5*e.size);
       let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
       let face=Math.sign(angleTo)>0?1:0;
       let bunImg=e.imgs[face][e.animFrame];
       let ratio=bunImg.width/bunImg.height;
       ctx.drawImage(bunImg,
-        parseInt(e.pos.x), parseInt(e.pos.y),
+        parseInt(e.pos.x)-((10*e.size*ratio)/2), parseInt(e.pos.y-(10*e.size)),
         10*e.size*ratio, 10*e.size);
+      if(e.isRunning())
+      {
+        ctx.fillStyle="#ff0000";
+        ctx.textBaseline="bottom";
+        ctx.textAlign="center";
+        ctx.font="60px xkcd";
+        ctx.fillText('!', parseInt(e.pos.x), parseInt(e.pos.y-(10*e.size)))
+      }
       continue;
     }
     else if(e instanceof Watcher)
@@ -59,6 +71,71 @@ function drawScene()
     else if(e instanceof Grass)
       ctx.fillStyle="#ffff00";
     ctx.fillRect(e.pos.x, e.pos.y, 50, 50);
+  }
+  */
+  for(let i=0; i<world.entities.buns.length; i++)
+  {
+    let e=world.entities.buns[i];
+    let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
+    let face=Math.sign(angleTo)>0?1:0;
+    let bunImg=e.imgs[face][e.animFrame];
+    let ratio=bunImg.width/bunImg.height;
+    ctx.drawImage(bunImg,
+      parseInt(e.pos.x)-((10*e.size*ratio)/2), parseInt(e.pos.y-(10*e.size)),
+      10*e.size*ratio, 10*e.size);
+    if(e.isRunning())
+    {
+      ctx.fillStyle="#ff0000";
+      ctx.textBaseline="bottom";
+      ctx.textAlign="center";
+      ctx.font="60px xkcd";
+      ctx.fillText('!', parseInt(e.pos.x), parseInt(e.pos.y-(10*e.size)))
+    }
+    else if(e.reported)
+    {
+      ctx.drawImage(images.heart, parseInt(e.pos.x)-8, parseInt(e.pos.y-(10*e.size))-20, 16, 16)
+    }
+  }
+  
+  for(let i=0; i<world.entities.hides.length; i++)
+  {
+    let e=world.entities.hides[i];
+    if(e instanceof Bush)
+      ctx.fillStyle="#00ff00";
+    else if(e instanceof Rock)
+      ctx.fillStyle="#808080";
+    else if(e instanceof Grass)
+      ctx.fillStyle="#ffff00";
+    ctx.fillRect(e.pos.x, e.pos.y, 50, 50);
+  }
+  for(let i=0; i<world.entities.watchers.length; i++)
+  {
+    let e=world.entities.watchers[i];
+    ctx.fillStyle="#000000";
+    if(e instanceof Player)
+    {
+      ctx.fillStyle="#800000";
+    }
+    if(e.currentMood==e.Mood.SAD)
+    {
+      ctx.fillStyle="#0000ff";
+    }
+    ctx.fillRect(e.pos.x-(75/2), e.pos.y-150, 75, 150);
+    if(e instanceof Player && e.currentMood==e.Mood.SAD)
+    {
+      ctx.fillStyle="#0000ff";
+      ctx.textBaseline="bottom";
+      ctx.textAlign="center";
+      ctx.font="60px xkcd";
+      ctx.fillText("You are too sad to continue on.",
+        parseInt(e.pos.x), parseInt(e.pos.y)+200);
+      ctx.fillText("You must wait for a bun to come and cheer you up.",
+        parseInt(e.pos.x), parseInt(e.pos.y)+300);
+    }
+    if(e.currentMood==e.Mood.SQUEEL)
+    {
+      ctx.drawImage(images.heart, e.pos.x+21-(75/2), e.pos.y-35-150, 32, 32);
+    }
   }
   ctx.restore();
 }

@@ -52,6 +52,7 @@ class Watcher extends Mob
       WANDER: "WANDER",
       RESPOND: "RESPOND",
       SQUEEL: "SQUEEL",
+      SAD: "SAD",
       STEP: "STEP" //sub-mood
     }
     this.currentMood=this.Mood.WANDER;
@@ -206,6 +207,33 @@ class Watcher extends Mob
           }
         }
       },
+      SAD:function(self)
+      {
+        //look for a bun to cheer you up
+        let seenBuns=self.getBunsInView();
+        for(let i=0; i<seenBuns.length; i++)
+        {
+          let bun=seenBuns[i].bun;
+          if(self.happiness==0)
+            self.happiness=1;
+          else
+            self.happiness+=1/(bun.size*10);
+          if(bun.beSeen(self.reportSpeed))
+          {
+            //CONGRATS! YOU REPORTED THE BUN!
+            self.popularity+=1/(bun.size/10);
+            let report=new BunReport(self, bun.pos, bun.isKingBun());
+            bunTracker.pushReport(report);
+          }
+        }
+        
+        if(self.happiness>0)
+        {
+          self.prevMood=self.currentMood;
+          self.currentMood=self.Mood.SQUEEL;
+          self._moodDepth=100;
+        }
+      },
       STEP:function(self)
       {
         self.moveForward();
@@ -227,7 +255,16 @@ class Watcher extends Mob
     }
     
     if(this.getBunsInView().length==0)
-      this.happiness-=0.01;
+    {
+      this.happiness-=0.05;
+      this.happiness=Math.max(0, this.happiness);
+    }
+    if(this.happiness==0)
+    {
+      this.prevMood=this.currentMood;
+      this.currentMood=this.Mood.SAD;
+      this._moodDepth=100;
+    }
     switch(this.currentMood)
     {
       case this.Mood.WANDER:
@@ -238,6 +275,9 @@ class Watcher extends Mob
         break;
       case this.Mood.SQUEEL:
         moodTicks.SQUEEL(this);
+        break;
+      case this.Mood.SAD:
+        moodTicks.SAD(this);
         break;
       case this.Mood.STEP:
         moodTicks.STEP(this);
@@ -252,25 +292,28 @@ class Watcher extends Mob
         +parseInt(this.pos.y);
       document.getElementById("hap").innerText=parseInt(this.happiness);
       document.getElementById("pop").innerText=parseInt(this.popularity);
-      if(key[38]||key[87])//up
+      if(this.happiness>0)
       {
-        this.angle=3*(Math.PI/2);
-        this.moveForward(true);
-      }
-      if(key[40]||key[83])//down
-      {
-        this.angle=Math.PI/2;
-        this.moveForward(true);
-      }
-      if(key[37]||key[65])//left
-      {
-        this.angle=Math.PI;
-        this.moveForward(true);
-      }
-      if(key[39]||key[68])//up
-      {
-        this.angle=0;
-        this.moveForward(true);
+        if(key[38]||key[87])//up
+        {
+          this.angle=3*(Math.PI/2);
+          this.moveForward(true);
+        }
+        if(key[40]||key[83])//down
+        {
+          this.angle=Math.PI/2;
+          this.moveForward(true);
+        }
+        if(key[37]||key[65])//left
+        {
+          this.angle=Math.PI;
+          this.moveForward(true);
+        }
+        if(key[39]||key[68])//up
+        {
+          this.angle=0;
+          this.moveForward(true);
+        }
       }
     }
   }

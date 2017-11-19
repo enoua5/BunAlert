@@ -15,6 +15,7 @@
       font-family: xkcd;
       user-select: none;
       font-size: 0.9em;
+      font-variant: small-caps;
     }
     #outer
     {
@@ -31,6 +32,15 @@
       width: 1000px;
       border: 1px solid black;
     }
+    
+    #canvas
+    {
+      position: absolute;
+      left: 200px;
+      top: 0;
+      border: 1px solid black;
+    }
+    
     #tracker
     {
       overflow-y: scroll;
@@ -52,13 +62,6 @@
       border: 1px solid black;
       padding-left: 4px;
     }
-    #canvas
-    {
-      position: absolute;
-      left: 200px;
-      top: 0;
-      border: 1px solid black;
-    }
     .report
     {
       width: 200px;
@@ -75,12 +78,38 @@
     {
       content: "Happiness: ";
     }
+    
+    .menuscreen
+    {
+      text-align: center;
+      position: absolute;
+      top: -1px;
+      left: -1px;
+      width: 0;
+      height: 402px;
+      background: white;
+      overflow: hidden;
+    }
+    .open
+    {
+      width: 1002px;
+    }
+    
+    .button
+    {
+      background: green;
+    }
+    .button:hover
+    {
+      background: darkgreen;
+    }
 		</style>
 		<!--import classes-->
 		<script src="assets/js/classes/Random.class.js"></script>
 		
 		<script src="assets/js/buntracker.js"></script>
 		<script src="assets/js/images.js"></script>
+		<script src="assets/js/sfx.js"></script>
 		
 		<script src="assets/js/classes/Entity.class.js"></script>
 		<script src="assets/js/classes/Mob.class.js"></script>
@@ -102,8 +131,11 @@
 		function onLoad()
 		{
 		  loadImages();
+		  loadMusic();
+		  sfx.background.play();
       window.world=new World(5000,5000);
-      window.gameLoop=setInterval(main, 20);
+      //moved
+      //window.gameLoop=setInterval(main, 20);
 		}
 		//key listener
 		var key=[];
@@ -123,6 +155,31 @@
 		  let wrap=document.getElementById("wrapper");
 		  wrap.style.top=((window.innerHeight-parseInt(wrap.style.height))/2)+"px";
 		}, 100);
+		
+		//menu stuffs
+		function start()
+		{
+		  let o=document.getElementsByClassName("open");
+		  for(let i=0; i<o.length; i++)
+		    o[i].classList.remove("open");
+		  window.gameLoop=setInterval(main, 20);
+		}
+		function toggleHowToPlay()
+		{
+		  let how=document.getElementById("howtoplay");
+		  if(how.classList.contains("open"))
+		    how.classList.remove("open");
+		  else
+		    how.classList.add("open");
+		}
+		function toggleCredits()
+		{
+		  let credits=document.getElementById("credits");
+		  if(credits.classList.contains("open"))
+		    credits.classList.remove("open");
+		  else
+		    credits.classList.add("open");
+		}
 		</script>
 	</head>
 	<body onload="onLoad()">
@@ -136,7 +193,75 @@
           <span id="pop">ERROR</span>
         </div>
         <div id="tracker"></div>
-        <canvas id="canvas" width="800" height="400">
+        <canvas id="canvas" width="800" height="400"></canvas>
+        <!--start of menus-->
+        <div id="main" class="menuscreen open">
+          <h1>Bun Alert!</h1>
+          <img src="assets/img/bun/bun1.svg" width="150" height="100" style="transform: scaleX(-1)"></img>
+          
+          <br/>
+          
+          <div style="width:150px; display: inline-block">
+            <h2 class="button" onclick="toggleHowToPlay()">How to play</h2>
+          </div>
+          
+          <br/>
+          
+          <div style="width:150px; display: inline-block">
+            <h2 class="button" onclick="start()">Start!</h2>
+          </div>
+          
+          <br/>
+          
+          <div style="width:150px; display: inline-block">
+            <h2 class="button" onclick="toggleCredits()">Credits</h2>
+          </div>
+        </div>
+        
+        <div id="credits" class="menuscreen">
+          <h1>Credits</h1>
+          <h2>Creators</h2>
+          <h3>Programming: <a href="https://enoua5.github.io">Enoua5</a></h3>
+          <h3>Art: <a href="https://okami-wildclaw.deviantart.com/">Okami-Wildclaw</a></h3>
+          <h2>Assets Used</h2>
+          <h3>Font: <a href="https://github.com/ipython/xkcd-font">XKCD-script by iPython</a></h3>
+          <h3 style="margin-bottom:0">Music: Lilac by <a href="https://wingless-seraph.net/en/index.html">YouFulca(ユーフルカ)</a></h3>
+          
+          <br/>
+          
+          <div style="width:150px; display: inline-block;">
+            <h2 class="button" onclick="toggleCredits()" style="margin-top: -100px;">Return</h2>
+          </div>
+        </div>
+        
+        <div id="howtoplay" class="menuscreen">
+          <h1>How to play</h1>
+          <p style="column-count: 3; column-rule: 1px outset #000000; padding: 3px;">
+          The goal of this game is to gain popularity among the Bun Alert community by alerting them to buns.
+          The smaller the bun, the more popularity you will recieve for alerting the community to it.
+          <br/>
+          But be careful! If you go too long without seeing a bun, you will start to get sad. If your happiness
+          drops to zero, you will sit on the ground, too sad to move, and have to wait for a bun to come cheer you up.
+          <br/>
+          To gain more happiness, all you have to do is stand near a bun to bask in its adorableness;
+          the smaller the bun, the more adorable. If you are close enough to a bun
+          to do this, a heart will appear over your head and you will begin to gain happiness. Note that you
+          cannot gain happiness from a frightened bun (marked with a ! above its head).
+          <br/>
+          <br/>
+          <br/>
+          To report a bun, all you have to do is stand near an unreported bun (any bun without a heart over its head)
+          until a heart appears over its head. Once this happens, your report will appear in the bun tracker and you
+          will gain popularity as people come to see your bun.
+          <br/>
+          <br/>
+          Use arrow keys or WASD to move.
+          </p>
+          
+          <div style="width:150px; display: inline-block;">
+            <h2 class="button" onclick="toggleHowToPlay()" style="margin-top: -100px;">Return</h2>
+          </div>
+        </div>
       </div>
     </div>
 	</body>
