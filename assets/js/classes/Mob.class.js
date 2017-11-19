@@ -7,8 +7,10 @@ class Mob extends Entity
     this.turnSpeed=turnSpeed;
     this.vel={x:0, y:0};
   }
-  moveForward()
+  moveForward(thisIsTheOverride)
   {
+    if(this.moveOverride && !thisIsTheOverride)
+      return;
     const mult=2;
   
     let xComp=Math.cos(this.angle);

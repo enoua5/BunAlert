@@ -2,12 +2,12 @@ class Bun extends Mob
 {
   constructor(x,y,angle)
   {
-    var size=Random.randNormBetween(1, 20, 10, 4);
+    var size=Random.randNormBetween(1, 20, 7, 2);
     
-    var speed=(size/10)**-1
+    var speed=Math.min((size/10)**-1, 2)
     var turn=speed/8;
     
-    super(x,y,angle,0,[], speed,turn);
+    super(x,y,angle,0,[images.bun, revImages.bun], speed,turn);
     this.size=size;
     
     this.size=size;
@@ -61,6 +61,11 @@ class Bun extends Mob
   isKingBun()
   {
     return this.size<5;
+  }
+  isRunning()
+  {
+    return this.currentMood==this.Mood.RUN||
+      (this.prevMood==this.Mood.RUN&&this.currentMood==this.Mood.HOP);
   }
   
   checkIntimAndRun()
@@ -284,7 +289,7 @@ class Bun extends Mob
         {
           self.animTimer=100;
           self.animFrame++;
-          if(self.animFrame>=self.imgs.length)
+          if(self.animFrame>=self.imgs[0].length)
           {
             self.animFrame=0;
             self.animTimer=Infinity;

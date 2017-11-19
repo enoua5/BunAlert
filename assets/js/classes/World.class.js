@@ -10,6 +10,7 @@ class World
         mobs:[],
           buns:[],
           watchers:[],
+            player:null,
         hides:[]
     }
     
@@ -34,7 +35,7 @@ class World
     }
     
     //add in the entities
-    var numBuns=(w*h)/250000;
+    var numBuns=(w*h)/1000000;
     for(let i=0; i<numBuns; i++)
     {
       let newBun=new Bun(Math.random()*w,
@@ -46,7 +47,7 @@ class World
       this.entities.buns.push(newBun);
     }
     
-    var numWatch=(w*h)/(250000*5)
+    var numWatch=(w*h)/(250000*5);
     for(let i=0; i<numWatch; i++)
     {
       let newWatch=new Watcher(Math.random()*w,
@@ -57,5 +58,11 @@ class World
       this.entities.mobs.push(newWatch);
       this.entities.watchers.push(newWatch);
     }
+    
+    let newPlayer=new Player(w/2,h/2);
+    this.entities.all.push(newPlayer);
+    this.entities.mobs.push(newPlayer);
+    this.entities.watchers.push(newPlayer);
+    this.entities.player=newPlayer;
   }
 }

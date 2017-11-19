@@ -3,12 +3,55 @@
 	<head>
 		<title>Bun Alert</title>
 		<style>
-
+    #wrapper
+    {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1000px;
+      height: 400px;
+      border: 1px solid black;
+    }
+    #tracker
+    {
+      overflow-y: scroll;
+      overflow-x: hidden;
+      position: absolute;
+      left: 0;
+      top: 50px;
+      width: 200px;
+      height: 350px;
+      border: 1px solid black;
+    }
+    #GPS
+    {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 200px;
+      height: 50px;
+      border: 1px solid black;
+    }
+    #canvas
+    {
+      position: absolute;
+      left: 200px;
+      top: 0;
+      border: 1px solid black;
+    }
+    .report
+    {
+      width: 200px;
+      height: 100px;
+      background: grey;
+      margin-bottom: 3px;
+    }
 		</style>
 		<!--import classes-->
 		<script src="assets/js/classes/Random.class.js"></script>
 		
 		<script src="assets/js/buntracker.js"></script>
+		<script src="assets/js/images.js"></script>
 		
 		<script src="assets/js/classes/Entity.class.js"></script>
 		<script src="assets/js/classes/Mob.class.js"></script>
@@ -29,12 +72,31 @@
 		<script>
 		function onLoad()
 		{
+		  loadImages();
       window.world=new World(5000,5000);
       window.gameLoop=setInterval(main, 20);
+		}
+		//key listener
+		var key=[];
+		window.onkeydown=function(e)
+		{
+		  var code = e.keyCode ? e.keyCode : e.which;
+		  key[code]=true;
+		}
+		window.onkeyup=function(e)
+		{
+		  var code = e.keyCode ? e.keyCode : e.which;
+		  key[code]=false;
 		}
 		</script>
 	</head>
 	<body onload="onLoad()">
-    <canvas id="canvas" width="5000" height="5000">
+	  <div id="wrapper">
+	    <div id="GPS">
+	      <span id="coord">ERROR</span>
+	    </div>
+	    <div id="tracker"></div>
+      <canvas id="canvas" width="800" height="400">
+    </div>
 	</body>
 </html>
