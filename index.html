@@ -2,14 +2,33 @@
 <html>
 	<head>
 		<title>Bun Alert</title>
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<style>
-    #wrapper
+		@font-face
+		{
+		  src: url("assets/xkcd-script.ttf");
+		  font-family: "xkcd";
+		}
+		body
+    {
+      background: black;
+      font-family: xkcd;
+      user-select: none;
+      font-size: 0.9em;
+    }
+    #outer
     {
       position: absolute;
-      left: 0;
-      top: 0;
+      top:0;
+      left:0;
+      width: 100%;
+    }
+    #wrapper
+    {
+      background: white;
+      position: relative;
+      margin: auto;
       width: 1000px;
-      height: 400px;
       border: 1px solid black;
     }
     #tracker
@@ -31,6 +50,7 @@
       width: 200px;
       height: 60px;
       border: 1px solid black;
+      padding-left: 4px;
     }
     #canvas
     {
@@ -45,6 +65,7 @@
       height: 100px;
       background: grey;
       margin-bottom: 3px;
+      padding-left: 4px;
     }
     #pop::before
     {
@@ -96,19 +117,27 @@
 		  var code = e.keyCode ? e.keyCode : e.which;
 		  key[code]=false;
 		}
+		//make sure things stay centered
+		setInterval(function(){
+		  document.getElementById("outer").style.height=window.innerHeight+"px";
+		  let wrap=document.getElementById("wrapper");
+		  wrap.style.top=((window.innerHeight-parseInt(wrap.style.height))/2)+"px";
+		}, 100);
 		</script>
 	</head>
 	<body onload="onLoad()">
-	  <div id="wrapper">
-	    <div id="GPS">
-	      <span id="coord">ERROR</span>
-	      <br/>
-	      <span id="hap">ERROR</span>
-	      <br/>
-	      <span id="pop">ERROR</span>
-	    </div>
-	    <div id="tracker"></div>
-      <canvas id="canvas" width="800" height="400">
+	  <div id="outer">
+      <div id="wrapper" style="height: 400px">
+        <div id="GPS">
+          <span id="coord">ERROR</span>
+          <br/>
+          <span id="hap">ERROR</span>
+          <br/>
+          <span id="pop">ERROR</span>
+        </div>
+        <div id="tracker"></div>
+        <canvas id="canvas" width="800" height="400">
+      </div>
     </div>
 	</body>
 </html>

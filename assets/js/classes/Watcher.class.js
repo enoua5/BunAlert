@@ -11,7 +11,7 @@ class Watcher extends Mob
     this.viewDist=500;
     this.reportSpeed=1;
     
-    this.happiness=0;
+    this.happiness=20;
     this.popularity=0;
     
     this.target=null;
@@ -78,8 +78,7 @@ class Watcher extends Mob
           let e=world.entities.buns[i];
           let p2=e.pos;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
-          //TODO make this cleaner
-          if(dist<nearest.dist && !(e.isRunning()))
+          if(dist<nearest.dist && !e.isRunning())
           {
             nearest={dist:dist, pos:p2};
             theBun=e;
@@ -96,11 +95,26 @@ class Watcher extends Mob
         
         return {bun: theBun, dist: nearest.dist/*, angleTo: angleTo*/};
   }
+  getBunsInView() //returns the buns, their distances
+  {
+        let ret=[];
+        let p1=this.pos
+        for(let i=0; i<world.entities.buns.length; i++)
+        {
+          let e=world.entities.buns[i];
+          let p2=e.pos;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          if(dist<this.viewDist)
+            ret.push({bun:e, dist:dist});
+        }
+        
+        return ret;
+  }
   hear(report)
   {
     if(!this.moveOverride)
     {
-      if(Math.random()<0.5)
+      if(Math.random()<report.isKing?0.9:0.5)
       {
         this.target=report.loc;
         
@@ -166,6 +180,7 @@ class Watcher extends Mob
           self._moodDepth=50;
           return;
         }
+        /*
         bun=bun.bun;
         self.happiness+=1/(bun.size*10)
         if(bun.beSeen(self.reportSpeed))
@@ -174,6 +189,21 @@ class Watcher extends Mob
           self.popularity+=1/(bun.size/10);
           let report=new BunReport(self, bun.pos, bun.isKingBun());
           bunTracker.pushReport(report);
+        }
+        */
+        //SEE ALL THE BUNS!
+        let seenBuns=self.getBunsInView();
+        for(let i=0; i<seenBuns.length; i++)
+        {
+          let bun=seenBuns[i].bun;
+          self.happiness+=1/(bun.size*10);
+          if(bun.beSeen(self.reportSpeed))
+          {
+            //CONGRATS! YOU REPORTED THE BUN!
+            self.popularity+=1/(bun.size/10);
+            let report=new BunReport(self, bun.pos, bun.isKingBun());
+            bunTracker.pushReport(report);
+          }
         }
       },
       STEP:function(self)
@@ -196,6 +226,8 @@ class Watcher extends Mob
       }
     }
     
+    if(this.getBunsInView().length==0)
+      this.happiness-=0.01;
     switch(this.currentMood)
     {
       case this.Mood.WANDER:

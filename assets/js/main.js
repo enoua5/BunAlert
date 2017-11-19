@@ -9,7 +9,7 @@ function drawScene()
 {
   var canvas=document.getElementById("canvas")
   var ctx=canvas.getContext('2d');
-  ctx.fillStyle="#ffffff";
+  ctx.fillStyle="#d2b48c";
   ctx.fillRect(0,0,parseInt(canvas.width),parseInt(canvas.height));
   //PLEASE OH PLEASE OH PLEASE DON'T LET THIS BE FINAL
   ctx.save();
@@ -28,13 +28,15 @@ function drawScene()
         ctx.fillStyle="#00FFFF";
       if(e.currentMood=="SIT")
         ctx.fillStyle="#0000ff";
-      ctx.fillRect(e.pos.x, e.pos.y, 5*e.size, 5*e.size);
+      //ctx.fillRect(e.pos.x, e.pos.y, 5*e.size, 5*e.size);
+      let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
+      let face=Math.sign(angleTo)>0?1:0;
+      let bunImg=e.imgs[face][e.animFrame];
+      let ratio=bunImg.width/bunImg.height;
+      ctx.drawImage(bunImg,
+        parseInt(e.pos.x), parseInt(e.pos.y),
+        10*e.size*ratio, 10*e.size);
       continue;
-      //let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
-      //let face=Math.sign(angleTo)>0?1:0;
-      //ctx.drawImage(e.imgs[face][e.animFrame],
-      //  parseInt(e.pos.x), parseInt(e.pos.y),
-      //  10*e.size, 10*e.size);
     }
     else if(e instanceof Watcher)
     {

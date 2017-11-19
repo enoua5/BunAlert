@@ -10,11 +10,10 @@ function loadImages()
   for(let i=0; i<4; i++)
   {
     images.bun.push(new Image());
-    images.bun[i].src="assets/img/bun/bun"+(i+1)+".png";
+    images.bun[i].src="assets/img/bun/bun"+(i+1)+".svg";
     revImages.bun.push(new Image());
-    revImages.bun[i].src="assets/img/bun/revbun"+(i+1)+".png";
-    
-    images.heart=new Image();
-    images.heart.src="assets/img/heart.png";
+    revImages.bun[i].src="assets/img/bun/bun"+(i+1)+".rev.svg";
   }
+  images.heart=new Image();
+  images.heart.src="assets/img/heart.png";
 }
