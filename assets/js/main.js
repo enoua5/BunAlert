@@ -89,11 +89,13 @@ function drawScene()
       ctx.textBaseline="bottom";
       ctx.textAlign="center";
       ctx.font="60px xkcd";
-      ctx.fillText('!', parseInt(e.pos.x), parseInt(e.pos.y-(10*e.size)))
+      let offset=10*e.size*(face?0.5:-0.5);
+      ctx.fillText('!', parseInt(e.pos.x)+offset, parseInt(e.pos.y-(10*e.size)))
     }
     else if(e.reported)
     {
-      ctx.drawImage(images.heart, parseInt(e.pos.x)-8, parseInt(e.pos.y-(10*e.size))-20, 16, 16)
+      let offset=10*e.size*(face?0.5:-0.5);
+      ctx.drawImage(images.heart, parseInt(e.pos.x)-8+offset, parseInt(e.pos.y-(10*e.size))-20, 16, 16)
     }
   }
   
