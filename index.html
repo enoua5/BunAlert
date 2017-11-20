@@ -147,11 +147,13 @@
 		var key=[];
 		window.onkeydown=function(e)
 		{
+		  e.preventDefault();
 		  var code = e.keyCode ? e.keyCode : e.which;
 		  key[code]=true;
 		}
 		window.onkeyup=function(e)
 		{
+		  e.preventDefault();
 		  var code = e.keyCode ? e.keyCode : e.which;
 		  key[code]=false;
 		}
