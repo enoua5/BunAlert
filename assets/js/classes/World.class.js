@@ -17,7 +17,7 @@ class World
     //add in the hides
     //every element is half as common as the one before it
     var hideTypes=[Grass, Rock, Bush];
-    for(let i=0; i<(w*h)/50000; i++)
+    for(let i=0; i<(w*h)/500000; i++)
     {
       let type=0;
       //        +1 because it's the next one that matters

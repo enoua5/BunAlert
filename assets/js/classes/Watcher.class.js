@@ -2,16 +2,18 @@ class Watcher extends Mob
 {
   constructor(x,y,angle)
   {
-    var intim=Random.randNormBetween(0, 100, 100, 10);
+    var intim=Random.randNormBetween(0, 100, 50, 10);
     var speed=Random.randNormBetween(0, 4, 2, 0.1);
     var turn=Random.randNormBetween(0, 1, 1/8, 0.01);
     
-    super(x,y,angle,intim,[],speed,turn);
+    var skin=Math.floor(Math.random()*images.watchers.length);
+    let skinMap=[revImages.watchers[skin], images.watchers[skin]];
+    super(x,y,angle,intim,skinMap,speed,turn);
     
     this.viewDist=500;
     this.reportSpeed=1;
     
-    this.happiness=20;
+    this.happiness=Random.randNormBetween(0, 30, 20, 3);
     this.popularity=0;
     
     this.target=null;
@@ -105,7 +107,7 @@ class Watcher extends Mob
           let e=world.entities.buns[i];
           let p2=e.pos;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
-          if(dist<this.viewDist)
+          if(dist<this.viewDist && !e.isRunning())
             ret.push({bun:e, dist:dist});
         }
         
@@ -237,12 +239,12 @@ class Watcher extends Mob
       STEP:function(self)
       {
         self.moveForward();
-        self.animTimer--;
+        self.animTimer-=20;
         if(self.animTimer<=0)
         {
           self.animTimer=100;
           self.animFrame++;
-          if(self.animFrame>=self.imgs.length)
+          if(self.animFrame>=self.imgs[0].walk.length)
           {
             self.animFrame=0;
             self.animTimer=Infinity;
@@ -288,33 +290,7 @@ class Watcher extends Mob
     
     if(this.moveOverride)
     {
-      document.getElementById("coord").innerText=parseInt(this.pos.x)+", "
-        +parseInt(this.pos.y);
-      document.getElementById("hap").innerText=parseInt(this.happiness);
-      document.getElementById("pop").innerText=parseInt(this.popularity);
-      if(this.happiness>0)
-      {
-        if(key[38]||key[87])//up
-        {
-          this.angle=3*(Math.PI/2);
-          this.moveForward(true);
-        }
-        if(key[40]||key[83])//down
-        {
-          this.angle=Math.PI/2;
-          this.moveForward(true);
-        }
-        if(key[37]||key[65])//left
-        {
-          this.angle=Math.PI;
-          this.moveForward(true);
-        }
-        if(key[39]||key[68])//up
-        {
-          this.angle=0;
-          this.moveForward(true);
-        }
-      }
+      this.extraStuff();
     }
   }
 }

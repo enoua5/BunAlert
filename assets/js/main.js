@@ -100,27 +100,41 @@ function drawScene()
   for(let i=0; i<world.entities.hides.length; i++)
   {
     let e=world.entities.hides[i];
+    let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
+    let face=Math.sign(angleTo)>0;
+    let hideImgs=face?images.hides:revImages.hides;
+    let img=new Image();
     if(e instanceof Bush)
-      ctx.fillStyle="#00ff00";
+      img=hideImgs.bush;
     else if(e instanceof Rock)
-      ctx.fillStyle="#808080";
+      img=hideImgs.rock;
     else if(e instanceof Grass)
-      ctx.fillStyle="#ffff00";
-    ctx.fillRect(e.pos.x, e.pos.y, 50, 50);
+      img=hideImgs.grass
+    ctx.drawImage(img, e.pos.x, e.pos.y, 100, 100);
   }
   for(let i=0; i<world.entities.watchers.length; i++)
   {
     let e=world.entities.watchers[i];
-    ctx.fillStyle="#000000";
-    if(e instanceof Player)
+    let cImg=new Image();
+    if(!(e instanceof Player))
     {
-      ctx.fillStyle="#800000";
+      let angleTo=-Math.atan2(Math.sin(e.angle-Math.PI/2), Math.cos(e.angle-Math.PI/2));
+      let face=Math.sign(angleTo)>0?1:0;
+      
+      cImg=e.imgs[face].stand;
+      if(e.currentMood==e.Mood.STEP)
+      {
+        cImg=e.imgs[face].walk[e.animFrame];
+      }
+      else if(e.currentMood==e.Mood.SAD)
+      {
+        cImg=e.imgs[face].cry;
+      }
     }
-    if(e.currentMood==e.Mood.SAD)
-    {
-      ctx.fillStyle="#0000ff";
-    }
-    ctx.fillRect(e.pos.x-(75/2), e.pos.y-150, 75, 150);
+    else
+      cImg=e.correctImg;
+    ctx.drawImage(cImg, e.pos.x-(100/2), e.pos.y-150, 100, 200);
+    
     if(e instanceof Player && e.currentMood==e.Mood.SAD)
     {
       ctx.fillStyle="#0000ff";
