@@ -6,6 +6,6 @@ class BunReport
     this.finder=finder;
     this.loc=loc;
     this.isKing=isKing;
-    this.timeToClear=10000;//10 seconds
+    this.timeToClear=20000;//20 seconds
   }
 }
