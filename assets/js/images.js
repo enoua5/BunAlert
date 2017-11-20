@@ -12,6 +12,10 @@ var images={
     stand: new Image(),
     cry: new Image(),
     walk: []
+  },
+  us:{
+    wild:{},
+    iota:{}
   }
 }
 var revImages={
@@ -26,6 +30,10 @@ var revImages={
     stand: new Image(),
     cry: new Image(),
     walk: []
+  },
+  us:{
+    wild:{},
+    iota:{}
   }
 }
 function loadImages()
@@ -87,6 +95,45 @@ function loadImages()
     images.player.walk[j].src="assets/img/watcher/beret/"+(j+1)+".svg";
     revImages.player.walk.push(new Image());
     revImages.player.walk[j].src="assets/img/watcher/beret/"+(j+1)+".rev.svg";
+  }
+  
+  names=["iota","wild"];
+  for(let i=0; i<names.length; i++)
+  {
+    let imgMap={
+      profile: new Image(),
+      stand: new Image(),
+      cry: new Image(),
+      walk: []
+    };
+    let folder="assets/img/watcher/"+names[i]+"/";
+    imgMap.stand.src=folder+"stand.svg";
+    imgMap.cry.src=folder+"cry.svg";
+    imgMap.profile.src=folder+"profile.png";
+    
+    for(let j=0; j<8; j++)
+    {
+      imgMap.walk.push(new Image());
+      imgMap.walk[j].src=folder+(j+1)+".svg";
+    }
+    
+    this.images.us[names[i]]=imgMap;
+    
+    let rimgMap={
+      stand: new Image(),
+      cry: new Image(),
+      walk: []
+    };
+    rimgMap.stand.src=folder+"stand.rev.svg";
+    rimgMap.cry.src=folder+"cry.rev.svg";
+    
+    for(let j=0; j<8; j++)
+    {
+      rimgMap.walk.push(new Image());
+      rimgMap.walk[j].src=folder+(j+1)+".rev.svg";
+    }
+    
+    this.revImages.us[names[i]]=rimgMap;
   }
   
   images.heart.src="assets/img/heart.png";

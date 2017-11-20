@@ -258,7 +258,7 @@ class Watcher extends Mob
     
     if(this.getBunsInView().length==0)
     {
-      this.happiness-=0.05;
+      this.happiness-=0.01;
       this.happiness=Math.max(0, this.happiness);
     }
     if(this.happiness==0)

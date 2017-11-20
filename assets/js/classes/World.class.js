@@ -58,6 +58,10 @@ class World
       this.entities.mobs.push(newWatch);
       this.entities.watchers.push(newWatch);
     }
+    this.entities.watchers[0].userName="Okami-Wildclaw";
+    this.entities.watchers[0].imgs=[revImages.us.wild, images.us.wild];
+    this.entities.watchers[1].userName="Enoua5";
+    this.entities.watchers[1].imgs=[revImages.us.iota, images.us.iota];
     
     let newPlayer=new Player(w/2,h/2);
     this.entities.all.push(newPlayer);
