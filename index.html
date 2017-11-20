@@ -139,7 +139,7 @@
 		  loadImages();
 		  loadMusic();
 		  sfx.background.play();
-      window.world=new World(5000,5000);
+      window.world=new World(4000,4000);
       //moved
       //window.gameLoop=setInterval(main, 20);
 		}
@@ -147,15 +147,17 @@
 		var key=[];
 		window.onkeydown=function(e)
 		{
-		  e.preventDefault();
 		  var code = e.keyCode ? e.keyCode : e.which;
 		  key[code]=true;
+		  if(code>=37 && code <=40)
+		    e.preventDefault();
 		}
 		window.onkeyup=function(e)
 		{
-		  e.preventDefault();
 		  var code = e.keyCode ? e.keyCode : e.which;
 		  key[code]=false;
+		  if(code>=37 && code <=40)
+		    e.preventDefault();
 		}
 		//make sure things stay centered
 		setInterval(function(){
