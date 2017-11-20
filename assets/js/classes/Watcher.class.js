@@ -217,7 +217,7 @@ class Watcher extends Mob
         {
           let bun=seenBuns[i].bun;
           if(self.happiness==0)
-            self.happiness=1;
+            self.happiness=10;
           else
             self.happiness+=1/(bun.size*10);
           if(bun.beSeen(self.reportSpeed))

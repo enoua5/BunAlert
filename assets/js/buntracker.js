@@ -18,11 +18,16 @@ var bunTracker={
       world.entities.watchers[i].hear(report);
     this.reports.push(report);
     
+    let profilePic=new Image();
+    profilePic.src=report.finder.imgs[1].profile.src;
     let pushNoti=document.createElement("div");
     let nameArea=document.createElement("p");
+    nameArea.style.margin="0";
     let locArea=document.createElement("p");
+    locArea.style.margin="0";
     
     pushNoti.className="report";
+    pushNoti.appendChild(profilePic);
     nameArea.innerHTML="<span>"+report.finder.username+
       " </span><span style='color:#00ff00'>("+
       parseInt(report.finder.popularity)+")</span>";

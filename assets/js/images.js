@@ -8,6 +8,7 @@ var images={
   },
   watchers:[],
   player:{
+    profile: new Image(),
     stand: new Image(),
     cry: new Image(),
     walk: []
@@ -41,6 +42,7 @@ function loadImages()
   for(let i=0; i<names.length; i++)
   {
     let imgMap={
+      profile: new Image(),
       stand: new Image(),
       cry: new Image(),
       walk: []
@@ -48,6 +50,7 @@ function loadImages()
     let folder="assets/img/watcher/"+names[i]+"/";
     imgMap.stand.src=folder+"stand.svg";
     imgMap.cry.src=folder+"cry.svg";
+    imgMap.profile.src=folder+"profile.png";
     
     for(let j=0; j<8; j++)
     {
@@ -73,6 +76,7 @@ function loadImages()
     
     this.revImages.watchers.push(rimgMap);
   }
+  images.player.profile.src="assets/img/watcher/beret/profile.png";
   images.player.stand.src="assets/img/watcher/beret/stand.svg";
   images.player.cry.src="assets/img/watcher/beret/cry.svg";
   revImages.player.stand.src="assets/img/watcher/beret/stand.rev.svg";
