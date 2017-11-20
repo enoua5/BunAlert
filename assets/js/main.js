@@ -5,20 +5,55 @@ function main()
   bunTracker.tick()
   drawScene();
 }
+function drawNine(/*variable arg length*/)
+{
+  var arguments=Array.from(arguments);
+  var ctx=arguments.pop();
+  arguments[1]-=world.w;
+  arguments[2]-=world.h;
+  for(let i=0; i<3; i++)
+  {
+    for(let j=0; j<3; j++)
+    {
+      ctx.drawImage(...arguments);
+      arguments[1]+=world.w;
+    }
+    arguments[2]+=world.h;
+    arguments[1]-=world.w*3;
+  }
+}
+function stringNine(/*variable arg length*/)
+{
+  var arguments=Array.from(arguments);
+  var ctx=arguments.pop();
+  arguments[1]-=world.w;
+  arguments[2]-=world.h;
+  for(let i=0; i<3; i++)
+  {
+    for(let j=0; j<3; j++)
+    {
+      ctx.fillText(...arguments);
+      arguments[1]+=world.w;
+    }
+    arguments[2]+=world.h;
+    arguments[1]-=world.w*3;
+  }
+}
 function drawScene()
 {
   var canvas=document.getElementById("canvas")
   var ctx=canvas.getContext('2d');
   ctx.fillStyle="#d2b48c";
-  ctx.fillRect(0,0,parseInt(canvas.width),parseInt(canvas.height));
+  ctx.fillRect(-parseInt(canvas.width),-parseInt(canvas.height),
+    parseInt(canvas.width)*3,parseInt(canvas.height)*3);
   //PLEASE OH PLEASE OH PLEASE DON'T LET THIS BE FINAL
   ctx.save();
   ctx.scale(0.5,0.5);
   ctx.translate(-world.entities.player.pos.x+800,
      -world.entities.player.pos.y+400-(300/2)+200);
-  ctx.strokeStyle="#000000";
-  ctx.lineWidth=10;
-  ctx.strokeRect(0,0,world.w,world.h);
+  //ctx.strokeStyle="#000000";
+  //ctx.lineWidth=10;
+  //ctx.strokeRect(0,0,world.w,world.h);
   /*
   for(let i=0; i<world.entities.all.length; i++)
   {
@@ -80,9 +115,9 @@ function drawScene()
     let face=Math.sign(angleTo)>0?1:0;
     let bunImg=e.imgs[face][e.animFrame];
     let ratio=bunImg.width/bunImg.height;
-    ctx.drawImage(bunImg,
+    drawNine(bunImg,
       parseInt(e.pos.x)-((10*e.size*ratio)/2), parseInt(e.pos.y-(10*e.size)),
-      10*e.size*ratio, 10*e.size);
+      10*e.size*ratio, 10*e.size, ctx);
     if(e.isRunning())
     {
       ctx.fillStyle="#ff0000";
@@ -90,12 +125,12 @@ function drawScene()
       ctx.textAlign="center";
       ctx.font="60px xkcd";
       let offset=10*e.size*(face?0.5:-0.5);
-      ctx.fillText('!', parseInt(e.pos.x)+offset, parseInt(e.pos.y-(10*e.size)))
+      stringNine('!', parseInt(e.pos.x)+offset, parseInt(e.pos.y-(10*e.size)), ctx)
     }
     else if(e.reported)
     {
       let offset=10*e.size*(face?0.5:-0.5);
-      ctx.drawImage(images.heart, parseInt(e.pos.x)-8+offset, parseInt(e.pos.y-(10*e.size))-20, 16, 16)
+      drawNine(images.heart, parseInt(e.pos.x)-8+offset, parseInt(e.pos.y-(10*e.size))-20, 16, 16, ctx)
     }
   }
   
@@ -112,7 +147,7 @@ function drawScene()
       img=hideImgs.rock;
     else if(e instanceof Grass)
       img=hideImgs.grass
-    ctx.drawImage(img, e.pos.x, e.pos.y, 100, 100);
+    drawNine(img, e.pos.x, e.pos.y, 100, 100, ctx);
   }
   for(let i=0; i<world.entities.watchers.length; i++)
   {
@@ -135,7 +170,7 @@ function drawScene()
     }
     else
       cImg=e.correctImg;
-    ctx.drawImage(cImg, e.pos.x-(100/2), e.pos.y-150, 100, 200);
+    drawNine(cImg, e.pos.x-(100/2), e.pos.y-150, 100, 200, ctx);
     
     if(e instanceof Player && e.currentMood==e.Mood.SAD)
     {
@@ -150,7 +185,7 @@ function drawScene()
     }
     if(e.currentMood==e.Mood.SQUEEL)
     {
-      ctx.drawImage(images.heart, e.pos.x+21-(75/2), e.pos.y-35-150, 32, 32);
+      drawNine(images.heart, e.pos.x+21-(75/2), e.pos.y-35-150, 32, 32, ctx);
     }
   }
   ctx.restore();

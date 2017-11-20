@@ -36,14 +36,16 @@ class Bun extends Mob
   }
   getIntimidation()
   {
-    let p1=this.pos;
+    //let p1=this.pos;
+    let p1={x:this.pos.x, y:this.pos.y};
     const distStretch=10;
     
     let totalIntim=0;
     for(let i=0; i<world.entities.all.length; i++)
     {
       let e=world.entities.all[i];
-      let p2=e.pos;
+      //let p2=e.pos;
+      let p2={x:e.pos.x, y:e.pos.y};
       if(p1.x==p2.x && p1.y==p2.y)
         continue;
       let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)/distStretch;
@@ -56,6 +58,29 @@ class Bun extends Mob
       
       totalIntim+=normalized;
     }
+    //again for the wrap around
+    p1.x=(p1.x+(world.w/2))%world.w;
+    p1.y=(p1.y+(world.h/2))%world.h;
+    for(let i=0; i<world.entities.all.length; i++)
+    {
+      let e=world.entities.all[i];
+      //let p2=e.pos;
+      let p2={x:e.pos.x, y:e.pos.y};
+      p2.x=(p2.x+(world.w/2))%world.w;
+      p2.y=(p2.y+(world.h/2))%world.h;
+      if(p1.x==p2.x && p1.y==p2.y)
+        continue;
+      let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)/distStretch;
+      
+      let baseIntim=e.intim;
+      
+      baseIntim+=(this.isKingBun()*baseIntim); //king buns are twice as timid
+      
+      let normalized=baseIntim/(dist**2); //inverse square
+      
+      totalIntim+=normalized;
+    }
+    
     return totalIntim;
   }
   isKingBun()
@@ -121,7 +146,7 @@ class Bun extends Mob
       {
         self.checkIntimAndRun();
         
-        if(Math.random()<0.025)
+        if(Math.random()<0.125)
           self._moodDepth--;
         
         if(self._moodDepth<=0)
@@ -144,11 +169,28 @@ class Bun extends Mob
         }
         
         let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
-        let p1=self.pos;
+        //let p1=self.pos;
+        let p1={x:self.pos.x, y:self.pos.y};
         for(let i=0; i<world.entities.watchers.length; i++)
         {
           let e=world.entities.watchers[i];
-          let p2=e.pos;
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
+        //and for the wrap-around
+        p1.x=(p1.x+(world.w/2))%world.w;
+        p1.y=(p1.y+(world.h/2))%world.h;
+        for(let i=0; i<world.entities.watchers.length; i++)
+        {
+          let e=world.entities.watchers[i];
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          p2.x=(p2.x+(world.w/2))%world.w;
+          p2.y=(p2.y+(world.h/2))%world.h;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
           
           if(dist<nearest.dist)
@@ -172,11 +214,13 @@ class Bun extends Mob
         self.checkIntimAndRun();
         
         let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
-        let p1=self.pos
+        //let p1=self.pos
+        let p1={x:self.pos.x, y:self.pos.y};
         for(let i=0; i<world.entities.buns.length; i++)
         {
           let e=world.entities.buns[i];
-          let p2=e.pos;
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
           if(p1.x==p2.x && p1.y==p2.y)
             continue;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
@@ -184,7 +228,23 @@ class Bun extends Mob
           if(dist<nearest.dist)
             nearest={dist:dist, pos:p2};
         }
-        
+        //wrap-around
+        p1.x=(p1.x+(world.w/2))%world.w;
+        p1.y=(p1.y+(world.h/2))%world.h;
+        for(let i=0; i<world.entities.buns.length; i++)
+        {
+          let e=world.entities.buns[i];
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          p2.x=(p2.x+(world.w/2))%world.w;
+          p2.y=(p2.y+(world.h/2))%world.h;
+          if(p1.x==p2.x && p1.y==p2.y)
+            continue;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
         let dx=nearest.pos.x - self.pos.x;
         let dy=nearest.pos.y - self.pos.y;
         let absoluteAngle=Math.atan2(dy,dx);
@@ -211,11 +271,28 @@ class Bun extends Mob
         //self.checkIntimAndRun();
         
         let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
-        let p1=self.pos
+        //let p1=self.pos
+        let p1={x:self.pos.x, y:self.pos.y};
         for(let i=0; i<world.entities.watchers.length; i++)
         {
           let e=world.entities.watchers[i];
-          let p2=e.pos;
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          
+          if(dist<nearest.dist)
+            nearest={dist:dist, pos:p2};
+        }
+        //wrap-around
+        p1.x=(p1.x+(world.w/2))%world.w;
+        p1.y=(p1.y+(world.h/2))%world.h;
+        for(let i=0; i<world.entities.watchers.length; i++)
+        {
+          let e=world.entities.watchers[i];
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          p1.x=(p1.x+(world.w/2))%world.w;
+          p1.y=(p1.y+(world.h/2))%world.h;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
           
           if(dist<nearest.dist)
