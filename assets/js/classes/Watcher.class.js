@@ -75,11 +75,13 @@ class Watcher extends Mob
   {
         let nearest={dist: Infinity, pos: {x:Infinity,y:Infinity}};
         let theBun=null;
-        let p1=this.pos
+        //let p1=this.pos
+        let p1={x:this.pos.x, y:this.pos.y};
         for(let i=0; i<world.entities.buns.length; i++)
         {
           let e=world.entities.buns[i];
-          let p2=e.pos;
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
           if(dist<nearest.dist && !e.isRunning())
           {
@@ -87,6 +89,24 @@ class Watcher extends Mob
             theBun=e;
           }
         }
+        //do it again for the wrap-around
+        p1.x=(p1.x+(world.w/2))%world.w;
+        p1.y=(p1.y+(world.h/2))%world.h;
+        for(let i=0; i<world.entities.buns.length; i++)
+        {
+          let e=world.entities.buns[i];
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          p2.x=(p2.x+(world.w/2))%world.w;
+          p2.y=(p2.y+(world.h/2))%world.h;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          if(dist<nearest.dist && !e.isRunning())
+          {
+            nearest={dist:dist, pos:p2};
+            theBun=e;
+          }
+        }
+        
         
         //let dx=nearest.pos.x - self.pos.x;
         //let dy=nearest.pos.y - self.pos.y;
@@ -101,11 +121,27 @@ class Watcher extends Mob
   getBunsInView() //returns the buns, their distances
   {
         let ret=[];
-        let p1=this.pos
+        //let p1=this.pos
+        let p1={x:this.pos.x, y:this.pos.y};
         for(let i=0; i<world.entities.buns.length; i++)
         {
           let e=world.entities.buns[i];
-          let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          //let p2=e.pos;
+          let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+          if(dist<this.viewDist && !e.isRunning())
+            ret.push({bun:e, dist:dist});
+        }
+        //do it again for the wrap-around
+        p1.x=(p1.x+(world.w/2))%world.w;
+        p1.y=(p1.y+(world.h/2))%world.h;
+        for(let i=0; i<world.entities.buns.length; i++)
+        {
+          let e=world.entities.buns[i];
+          //let p2=e.pos;
+          let p2={x:e.pos.x, y:e.pos.y};
+          p2.x=(p2.x+(world.w/2))%world.w;
+          p2.y=(p2.y+(world.h/2))%world.h;
           let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
           if(dist<this.viewDist && !e.isRunning())
             ret.push({bun:e, dist:dist});
@@ -147,9 +183,31 @@ class Watcher extends Mob
       },
       RESPOND:function(self)
       {
-        let p1=self.pos;
-        let p2=self.target;
-        let dist=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+        //let p1=self.pos;
+        let p1={x:self.pos.x, y:self.pos.y}
+        //let p2=self.target;
+        let p2={x:self.target.x, y:self.target.y};
+        let dist1=Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2);
+        //wrap-around
+        let pw1={x:undefined,y:undefined}
+        let pw2={x:undefined,y:undefined}
+        pw1.x=(p1.x+(world.w/2))%world.w;
+        pw1.y=(p1.y+(world.h/2))%world.h;
+        pw2.x=(p2.x+(world.w/2))%world.w;
+        pw2.y=(p2.y+(world.h/2))%world.h;
+        let dist2=Math.sqrt((pw1.x-pw2.x)**2 + (pw1.y-pw2.y)**2);
+        
+        if(dist1<dist2)
+        {
+          var dist=dist1;
+        }
+        else
+        {
+          var dist=dist2;
+          p1=pw1;
+          p2=pw2;
+        }
+        
         if(dist<300)
         {
           self.target=null;
