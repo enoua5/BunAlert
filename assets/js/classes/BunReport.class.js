@@ -4,7 +4,7 @@ class BunReport
   {
     //time is in UTC
     this.finder=finder;
-    this.loc=loc;
+    this.loc={x:loc.x, y:loc.y};
     this.isKing=isKing;
     this.timeToClear=20000;//20 seconds
   }
