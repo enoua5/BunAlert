@@ -48,7 +48,7 @@ class Player extends Watcher
       }
       if(moved)
       {
-        this.sAnimFrame+=1/5;
+        this.sAnimFrame+=2/5;
         if(this.sAnimFrame>=this.imgs[face].walk.length)
           this.sAnimFrame=0;
         this.correctImg=this.imgs[face].walk[Math.floor(this.sAnimFrame)];

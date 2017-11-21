@@ -66,7 +66,7 @@ class Watcher extends Mob
   
   enterStep()
   {
-    this.animTimer=100;
+    this.animTimer=50;
     this.prevMood=this.currentMood;
     this.currentMood=this.Mood.STEP;
     //DO NOT UPDATE MOOD DEPTH, WE ARE JUST RETURNING
@@ -300,7 +300,7 @@ class Watcher extends Mob
         self.animTimer-=20;
         if(self.animTimer<=0)
         {
-          self.animTimer=100;
+          self.animTimer=50;
           self.animFrame++;
           if(self.animFrame>=self.imgs[0].walk.length)
           {
