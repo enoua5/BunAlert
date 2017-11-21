@@ -146,6 +146,32 @@
 		  loadMusic();
 		  sfx.background.play();
       window.world=new World(4000,4000);
+      //mouse listener
+      var canvas=document.getElementById("canvas");
+      window.mousedown=false;
+      canvas.onmousedown=function(e){
+        window.mousedown=true;
+        var rect = e.target.getBoundingClientRect();
+        var x = e.pageX - rect.left;
+        var y = e.pageY - rect.top;
+        window.mousepos={x:x, y:y};
+      };
+      window.onmouseup=function(){
+        window.mousedown=false;
+        window.mousepos=null;
+      };
+      window.mousepos=null;
+      canvas.onmousemove=function(e){
+        if(window.mousedown)
+        {
+          var rect = e.target.getBoundingClientRect();
+          var x = e.pageX - rect.left;
+          var y = e.pageY - rect.top;
+          window.mousepos={x:x, y:y};
+        }
+        else
+          window.mousepos=null;
+      }
       //moved
       //window.gameLoop=setInterval(main, 20);
 		}
