@@ -22,28 +22,46 @@ class Player extends Watcher
     if(this.happiness>0)
     {
       let moved=false;
-      if(key[38]||key[87])//up
+      if(window.mousepos==null)
       {
-        this.angle=3*(Math.PI/2);
-        this.moveForward(true);
-        moved=true;
+        if(key[38]||key[87])//up
+        {
+          this.angle=3*(Math.PI/2);
+          this.moveForward(true);
+          moved=true;
+        }
+        if(key[40]||key[83])//down
+        {
+          this.angle=Math.PI/2;
+          this.moveForward(true);
+          moved=true;
+        }
+        if(key[37]||key[65])//left
+        {
+          this.angle=Math.PI;
+          this.moveForward(true);
+          moved=true;
+        }
+        if(key[39]||key[68])//right
+        {
+          this.angle=0;
+          this.moveForward(true);
+          moved=true;
+        }
       }
-      if(key[40]||key[83])//down
+      else if(window.mousedown)
       {
-        this.angle=Math.PI/2;
+        let c=document.getElementById("canvas");
+        let p1={x:c.width/2, y:c.height/2}; //player pos on screen
+        let p2=window.mousepos;
+        
+        let dx=p2.x-p1.x;
+        let dy=p2.y-p1.y;
+        let absoluteAngle=Math.atan2(dy,dx);
+        this.angle=absoluteAngle;
+        
         this.moveForward(true);
-        moved=true;
-      }
-      if(key[37]||key[65])//left
-      {
-        this.angle=Math.PI;
-        this.moveForward(true);
-        moved=true;
-      }
-      if(key[39]||key[68])//right
-      {
-        this.angle=0;
-        this.moveForward(true);
+        
         moved=true;
       }
       if(moved)
