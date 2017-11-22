@@ -14,8 +14,8 @@ class Random
   random()
   {
     this.m_z = (36969 * (this.m_z & 65535) + (this.m_z >> 16)) & this.mask;
-    m_w = (18000 * (m_w & 65535) + (m_w >> 16)) & mask;
-    var result = ((m_z << 16) + m_w) & mask;
+    this.m_w = (18000 * (this.m_w & 65535) + (this.m_w >> 16)) & this.mask;
+    var result = ((this.m_z << 16) + this.m_w) & this.mask;
     result /= 4294967296;
     return result + 0.5;
   }
