@@ -1,10 +1,10 @@
 class Random
 {
-  constructor()
+  constructor(seed)
   {
-    this.m_w=123456789;
-    this.m_z=987654321;
+    seed=seed||(new Date()).getTime();
     this.mask=0xffffffff;
+    this.seed(seed);
   }
   seed(i)
   {
